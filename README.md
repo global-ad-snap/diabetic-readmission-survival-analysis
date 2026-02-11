@@ -238,6 +238,44 @@ In a real-world consulting engagement, this project would be delivered as:
 - Interactive demo or dashboard (Streamlit)
 - Model card and risk & limitation documentation 
 
+## Deployment Considerations
+
+### Operational Integration
+
+Potential deployment environments include clinical decision support systems, business analytics platforms, or API-based inference pipelines. Integration considerations include data availability, workflow compatibility, and stakeholder usability.
+
+### Model Monitoring
+
+Recommended post-deployment monitoring:
+
+- Model performance drift detection
+- Data distribution monitoring
+- KPI tracking aligned with business or clinical outcomes
+- Periodic model recalibration
+
+Continuous monitoring is essential to maintain reliability.
+
+### Human Oversight
+
+For high-impact decisions:
+
+- Human-in-the-loop review recommended
+- AI outputs positioned as decision support rather than autonomous decision-making
+- Clear escalation pathways for uncertain predictions
+
+This is particularly critical in healthcare and financial risk contexts.
+
+### Governance & Compliance Awareness
+
+Deployment should consider:
+
+- Data privacy requirements
+- Auditability and reproducibility
+- Documentation of validation evidence
+- Regulatory context where applicable (e.g., healthcare AI)
+
+Formal validation would be required before operational use.
+
 ## License
 
 This project is licensed under the **MIT License**.  
