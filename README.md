@@ -37,9 +37,16 @@ Any real-world deployment would require **external validation, institutional rev
 
 **Event distribution**
 
-* `<30`: **11,357** (11.16%)
+* `<30`: **11,357** (11.41%)
 * Censored (`>30` + `NO`): **90,409**
-> **Note:** Survival time (`time`) is not included in the original dataset and was simulated for demonstration to enable survival modeling.
+
+> **Important Limitation**
+>
+> The time-to-event variable is constructed (proxy time labels) due to lack of true longitudinal follow-up.
+>
+> While the readmission event (<30 days) is observed, the survival time does not represent actual follow-up duration.
+>
+> Therefore, performance metrics reflect **relative risk discrimination based on feature–event association**, not real-world time-to-event prediction accuracy.
 ---
 
 ## Cohort Filtering Summary
@@ -53,8 +60,8 @@ Any real-world deployment would require **external validation, institutional rev
 | Remove unknown gender            | 99,549    |
 | Drop duplicates                  | 99,549    |
 
-**Final cohort:** 99,549 <br>
-**Total removed:** 2,217 <br>
+> **Final cohort:** 99,549 <br>
+> **Total removed:** 2,217 <br>
 These cohort exclusions follow standard clinical survival modeling practices.
 ---
 
@@ -144,8 +151,8 @@ these artifacts and are provided for transparency and reproducibility.
 * Schoenfeld residual proportional hazards test
 
 ### Model Performance  
-- **C-index (CoxPH):** 0.6375  
-- **C-index (RSF):** 0.7055  
+- **C-index (CoxPH):** 0.6039  
+- **C-index (RSF):** 0.6590    
 
 ## Kaplan–Meier Survival Curves (Risk Groups)
 
@@ -154,7 +161,7 @@ these artifacts and are provided for transparency and reproducibility.
 **Figure 1. Kaplan–Meier survival curves by risk group.**  
 High-risk patients show significantly earlier readmission compared to Medium and Low-risk groups  
 (log-rank p < 1e-80).  
-The clear separation confirms that the RSF-driven risk stratification captures meaningful differences in survival time.
+The clear separation confirms that the model captures meaningful differences in **relative risk of early readmission**, rather than true survival time.
 
 ### Included Results & Visualizations
 * `visuals/KM_Plots/km_by_risk_group.png`
@@ -174,13 +181,22 @@ The clear separation confirms that the RSF-driven risk stratification captures m
 
 ![RSF Feature Importance](visuals/EDA/rsf_feature_importance.png)
 
-**Figure 2. Random Survival Forest Feature Importances (Permutation-Based).**  
-The RSF model identifies `cox_risk`, number of inpatient visits, and discharge disposition as the most influential predictors of readmission.  
+***Figure 2. Random Survival Forest Feature Importances (Permutation-Based).**  
+The RSF model identifies number of inpatient visits, discharge disposition, and emergency utilization as the most influential predictors of readmission.
 Higher permutation importance indicates a larger increase in prediction error when the feature is shuffled, showing strong contribution to survival prediction.
 
 ### Model Performance  
-- **C-index (RSF):** 0.7055  
-- **Brier Score (t=176 days):** 0.0976  
+- **C-index (RSF):** 0.6590  
+- **Brier Score (t = 175 days):** 0.1043  
+
+**Baseline Comparison**
+
+A null model baseline Brier score can be approximated as:
+
+Event Rate × (1 − Event Rate)  
+= 0.1141 × (1 − 0.1141) ≈ 0.101  
+
+The model’s Brier score (0.1043) is slightly above baseline, indicating that predictive discrimination (C-index) provides the primary value in this setting.
 
 ### Included Results & Visualizations
 * `reports/model_comparison_cindex.csv`
@@ -229,6 +245,7 @@ This project demonstrates applied capabilities relevant to:
 
 In a consulting engagement, this work would be delivered as a **risk stratification and analytics prototype**, accompanied by a client-facing report outlining findings, limitations, and deployment considerations.
 
+---
 ## Client-Ready Deliverables 
 In a real-world consulting engagement, this project would be delivered as:
 - Cleaned and documented dataset
@@ -238,6 +255,119 @@ In a real-world consulting engagement, this project would be delivered as:
 - Interactive demo or dashboard (Streamlit)
 - Model card and risk & limitation documentation 
 
+---
+## Deployment Considerations
+
+### Operational Integration
+
+Potential deployment environments include clinical decision support systems, business analytics platforms, or API-based inference pipelines. Integration considerations include data availability, workflow compatibility, and stakeholder usability.
+
+### Model Monitoring
+
+Recommended post-deployment monitoring:
+
+- Model performance drift detection
+- Data distribution monitoring
+- KPI tracking aligned with business or clinical outcomes
+- Periodic model recalibration
+
+Continuous monitoring is essential to maintain reliability.
+
+### Human Oversight
+
+For high-impact decisions:
+
+- Human-in-the-loop review recommended
+- AI outputs positioned as decision support rather than autonomous decision-making
+- Clear escalation pathways for uncertain predictions
+
+This is particularly critical in healthcare and financial risk contexts.
+
+### Governance & Compliance Awareness
+
+Deployment should consider:
+
+- Data privacy requirements
+- Auditability and reproducibility
+- Documentation of validation evidence
+- Regulatory context where applicable (e.g., healthcare AI)
+
+Formal validation would be required before operational use.
+
+---
+
+## Clinical Impact
+
+### Potential Value Drivers
+
+This project is designed to support measurable operational or financial impact, including:
+
+- Improved decision accuracy
+- Operational efficiency gains
+- Risk reduction
+- Resource optimization
+- Revenue protection or growth
+
+### Example Deployment Benefits
+
+Actual impact depends on deployment context, data quality, and operational integration. Potential benefits may include:
+
+- Reduced operational costs through earlier risk identification
+- Improved allocation of staff, inventory, or marketing resources
+- Enhanced decision support for clinical or business stakeholders
+- Increased transparency and confidence in analytics-driven decisions
+
+### Measurement Considerations
+
+Typical ROI evaluation would include:
+
+- Baseline vs post-deployment performance comparison
+- Cost savings analysis
+- Revenue uplift measurement
+- Error reduction metrics
+- Operational efficiency indicators
+
+Formal ROI validation requires real-world deployment data.
+
+---
+
+## Validation & Reliability Considerations
+
+### Dataset Limitations
+
+Results are dependent on dataset scope, quality, and representativeness. Potential limitations include sample bias, missing data, and historical data constraints. External validation on independent datasets would be required before operational deployment.
+
+### Model Validation Approach
+
+Validation methods may include:
+
+- Train/test separation or cross-validation
+- Performance metrics relevant to the use case
+- Sensitivity to class imbalance where applicable
+- Error pattern analysis
+
+These steps help estimate generalization performance but do not replace real-world validation.
+
+### Clinical / Operational Validation Requirements
+
+For healthcare or high-stakes applications, additional validation typically includes:
+
+- Prospective evaluation in operational settings
+- Clinical or domain expert review
+- Workflow compatibility testing
+- Safety and performance monitoring after deployment
+
+Formal regulatory approval may be required depending on jurisdiction and intended use.
+
+### Performance Interpretation
+
+Model outputs should be interpreted cautiously:
+
+- Predictions support, not replace, expert decision-making
+- Performance metrics reflect dataset conditions
+- Continuous monitoring is recommended post-deployment
+
+---
 ## License
 
 This project is licensed under the **MIT License**.  
